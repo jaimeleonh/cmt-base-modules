@@ -1,2 +1,2 @@
-__init__.py
-.pyc
+python/__init__.py
+python/*.pyc
