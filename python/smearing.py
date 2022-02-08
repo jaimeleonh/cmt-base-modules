@@ -30,24 +30,22 @@ class jetSmearerRDFProducer():
                 ROOT.gSystem.Load("libBaseModules.so")
             base = "{}/{}/src/Base/Modules".format(
                 os.getenv("CMT_CMSSW_BASE"), os.getenv("CMT_CMSSW_VERSION"))
-            ROOT.gROOT.ProcessLine(".L {}/interface/jetsmearer.h".format(base))
+            ROOT.gROOT.ProcessLine(".L {}/interface/jetSmearer.h".format(base))
 
             ROOT.gInterpreter.Declare(
-                'auto worker = jetSmearer("%s", "%s", "%s");' % (
+                'auto jet_smearer = jetSmearer("%s", "%s", "%s");' % (
                     self.jerInputFilePath, self.jerInputFileName, self.jerUncertaintyInputFileName)
             )
 
     def run(self, df):
-        branches = ["jet_smear_factor", "jet_smear_factor_down", "jet_smear_factor_up"]
-        
         if not self.isMC:
-            return df
-        else:
-            df = df.Define("smear_factors", "worker.get_smear_vals("
-                "run, luminosityBlock, event, Jet_pt, Jet_eta, Jet_phi, Jet_mass, "
-                "GenJet_pt, GenJet_eta, GenJet_phi, GenJet_mass, fixedGridRhoFastjetAll)")
-            for ib, branch in enumerate(branches):
-                df = df.Define(branch, "smear_factors[%s]" % ib)
+            return df, []
+        branches = ["jet_smear_factor", "jet_smear_factor_down", "jet_smear_factor_up"]
+        df = df.Define("smear_factors", "jet_smearer.get_smear_vals("
+            "run, luminosityBlock, event, Jet_pt, Jet_eta, Jet_phi, Jet_mass, "
+            "GenJet_pt, GenJet_eta, GenJet_phi, GenJet_mass, fixedGridRhoFastjetAll)")
+        for ib, branch in enumerate(branches):
+            df = df.Define(branch, "smear_factors[%s]" % ib)
         return df, branches
 
 
@@ -89,3 +87,31 @@ def jetSmearerRDF(**kwargs):
         jerInputFileName=jerInputFileName,
         jerUncertaintyInputFileName=jerUncertaintyInputFileName,
         **kwargs)
+
+
+class metSmearerRDFProducer():
+    def __init__(self, isMC):
+        self.isMC = isMC
+        if self.isMC:
+            if "/libBaseModules.so" not in ROOT.gSystem.GetLibraries():
+                ROOT.gSystem.Load("libBaseModules.so")
+            base = "{}/{}/src/Base/Modules".format(
+                os.getenv("CMT_CMSSW_BASE"), os.getenv("CMT_CMSSW_VERSION"))
+            ROOT.gROOT.ProcessLine(".L {}/interface/metSmearer.h".format(base))
+            ROOT.gInterpreter.Declare('auto met_smearer = metSmearer();')
+
+    def run(self, df):
+        if not self.isMC:
+            return df, []
+        branches = ["MET_smeared_pt", "MET_smeared_phi"]
+        df = df.Define("smeared_met", "met_smearer.get_smeared_met("
+            "Jet_pt, Jet_eta, Jet_phi, Jet_mass, MET_pt, MET_phi, jet_smear_factor)")
+        for ib, branch in enumerate(branches):
+            df = df.Define(branch, "smeared_met[%s]" % ib)
+        return df, branches
+
+
+def metSmearerRDF(**kwargs):
+    isMC = kwargs.pop("isMC")
+    return lambda: metSmearerRDFProducer(isMC, **kwargs);
+    

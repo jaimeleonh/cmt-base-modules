@@ -1,4 +1,4 @@
-#include "Base/Modules/interface/jetsmearer.h"
+#include "Base/Modules/interface/jetSmearer.h"
 
 
 // Constructors
