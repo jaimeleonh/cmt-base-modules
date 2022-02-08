@@ -43,6 +43,7 @@ class jetSmearer {
     PyJetResolutionWrapper jer;
     PyJetParametersWrapper params_resolution = PyJetParametersWrapper();
     TRandom3 rnd = TRandom3(12345);
+    std::vector<float> jet_m_sf_and_uncertainty = {1.09, 1.04, 1.14};
 };
 
 #endif // jetSmearer_h

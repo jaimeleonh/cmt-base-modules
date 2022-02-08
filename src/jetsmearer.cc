@@ -34,7 +34,7 @@ std::vector<std::vector<float>> jetSmearer::get_smear_vals(
     float rho
 ) {
 
-  std::vector<float> jet_smeared_pt, jet_smeared_pt_down, jet_smeared_pt_up;//jet_smeared_mass;
+  std::vector<float> jet_smear_factor, jet_smear_factor_down, jet_smear_factor_up;
 
   // set seed
   int runnum = run << 20;
@@ -108,17 +108,12 @@ std::vector<std::vector<float>> jetSmearer::get_smear_vals(
           central_or_shift++) {
         if (smear_vals[central_or_shift] * jet_tlv.E() < 1E-2)
           smear_vals[central_or_shift] = 1E-2 / jet_tlv.E();
-
       }
     }
-    for (size_t central_or_shift = 0; central_or_shift < jet_pt_sf_and_uncertainty.size();
-        central_or_shift++) {
-      smear_vals[central_or_shift] = jet_tlv.Pt() * smear_vals[central_or_shift];
-    }
-    jet_smeared_pt.push_back(smear_vals[0]);
-    jet_smeared_pt_down.push_back(smear_vals[1]);
-    jet_smeared_pt_up.push_back(smear_vals[2]);
+    jet_smear_factor.push_back(smear_vals[0]);
+    jet_smear_factor_down.push_back(smear_vals[1]);
+    jet_smear_factor_up.push_back(smear_vals[2]);
   }
-  return {jet_smeared_pt, jet_smeared_pt_down, jet_smeared_pt_up};
+  return {jet_smear_factor, jet_smear_factor_down, jet_smear_factor_up};
   
 };

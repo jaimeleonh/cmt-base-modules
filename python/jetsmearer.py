@@ -11,7 +11,7 @@ class jetSmearerRDFProducer():
     def __init__(self, isMC, 
             jerInputFileName="Spring16_25nsV10_MC_PtResolution_AK4PFchs.txt",
             jerUncertaintyInputFileName="Spring16_25nsV10_MC_SF_AK4PFchs.txt",
-            jmr_vals=[1.09, 1.14, 1.04], *args, **kwargs):
+            *args, **kwargs):
 
         self.isMC = isMC
 
@@ -38,16 +38,16 @@ class jetSmearerRDFProducer():
             )
 
     def run(self, df):
-        branches = ["jet_pt_smeared", "jet_pt_smeared_down", "jet_pt_smeared_up"]
+        branches = ["jet_smear_factor", "jet_smear_factor_down", "jet_smear_factor_up"]
         
         if not self.isMC:
             return df
         else:
-            df = df.Define("smeared_jet_pts", "worker.get_smear_vals("
+            df = df.Define("smear_factors", "worker.get_smear_vals("
                 "run, luminosityBlock, event, Jet_pt, Jet_eta, Jet_phi, Jet_mass, "
                 "GenJet_pt, GenJet_eta, GenJet_phi, GenJet_mass, fixedGridRhoFastjetAll)")
             for ib, branch in enumerate(branches):
-                df = df.Define(branch, "smeared_jet_pts[%s]" % ib)
+                df = df.Define(branch, "smear_factors[%s]" % ib)
         return df, branches
 
 
