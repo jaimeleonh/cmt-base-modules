@@ -1,7 +1,25 @@
 import os
 from analysis_tools.utils import import_root
 
+from PhysicsTools.NanoAODTools.postprocessing.modules.common.puWeightProducer import (
+    puWeight_2016, puWeight_2017, puWeight_2018
+)
+
 ROOT = import_root()
+
+def puWeight(**kwargs):
+    isMC = kwargs.pop("isMC")
+    year = int(kwargs.pop("year"))
+
+    if not isMC:
+        return lambda: DummyModule(**kwargs)
+    else:
+        if year == 2016:
+            return puWeight_2016
+        elif year == 2017:
+            return puWeight_2017
+        elif year == 2018:
+            return puWeight_2018
 
 
 class puWeightRDFProducer():
@@ -47,18 +65,19 @@ class puWeightRDFProducer():
         return df, var_to_return
 
 
+class puWeightDummyRDFProducer():
+    def run(self, df):
+        return df, []
+
+
 # define modules using the syntax 'name = lambda : constructor' to avoid having them loaded when not needed
 
 pufile_mc2016 = "%s/src/PhysicsTools/NanoAODTools/python/postprocessing/data/pileup/pileup_profile_Summer16.root" % os.environ[
     'CMSSW_BASE']
 pufile_data2016 = "%s/src/PhysicsTools/NanoAODTools/python/postprocessing/data/pileup/PileupData_GoldenJSON_Full2016.root" % os.environ[
     'CMSSW_BASE']
-puWeight_2016 = lambda: puWeightRDFProducer(pufile_mc2016,
-                                         pufile_data2016,
-                                         "pu_mc",
-                                         "pileup",
-                                         verbose=False,
-                                         doSysVar=True)
+puWeight_2016RDF = lambda: puWeightRDFProducer(
+    pufile_mc2016, pufile_data2016, "pu_mc", "pileup", verbose=False, doSysVar=True)
 puAutoWeight_2016 = lambda: puWeightRDFProducer(
     "auto", pufile_data2016, "pu_mc", "pileup", verbose=False)
 
@@ -66,12 +85,8 @@ pufile_data2017 = "%s/src/PhysicsTools/NanoAODTools/python/postprocessing/data/p
     'CMSSW_BASE']
 pufile_mc2017 = "%s/src/PhysicsTools/NanoAODTools/python/postprocessing/data/pileup/mcPileup2017.root" % os.environ[
     'CMSSW_BASE']
-puWeight_2017 = lambda: puWeightRDFProducer(pufile_mc2017,
-                                         pufile_data2017,
-                                         "pu_mc",
-                                         "pileup",
-                                         verbose=False,
-                                         doSysVar=True)
+puWeight_2017RDF = lambda: puWeightRDFProducer(
+    pufile_mc2017, pufile_data2017, "pu_mc", "pileup", verbose=False, doSysVar=True)
 puAutoWeight_2017 = lambda: puWeightRDFProducer(
     "auto", pufile_data2017, "pu_mc", "pileup", verbose=False)
 
@@ -79,12 +94,8 @@ pufile_data2018 = "%s/src/PhysicsTools/NanoAODTools/python/postprocessing/data/p
     'CMSSW_BASE']
 pufile_mc2018 = "%s/src/PhysicsTools/NanoAODTools/python/postprocessing/data/pileup/mcPileup2018.root" % os.environ[
     'CMSSW_BASE']
-puWeight_2018 = lambda: puWeightRDFProducer(pufile_mc2018,
-                                         pufile_data2018,
-                                         "pu_mc",
-                                         "pileup",
-                                         verbose=False,
-                                         doSysVar=True)
+puWeight_2018RDF = lambda: puWeightRDFProducer(
+    pufile_mc2018, pufile_data2018, "pu_mc", "pileup", verbose=False, doSysVar=True)
 puAutoWeight_2018 = lambda: puWeightRDFProducer(
     "auto", pufile_data2018, "pu_mc", "pileup", verbose=False)
 
@@ -95,12 +106,8 @@ pufile_dataUL2016 = "%s/src/PhysicsTools/NanoAODTools/python/postprocessing/data
     'CMSSW_BASE']
 pufile_mcUL2016 = "%s/src/PhysicsTools/NanoAODTools/python/postprocessing/data/pileup/mcPileupUL2016.root" % os.environ[
     'CMSSW_BASE']
-puWeight_UL2016 = lambda: puWeightRDFProducer(pufile_mcUL2016,
-                                           pufile_dataUL2016,
-                                           "pu_mc",
-                                           "pileup",
-                                           verbose=False,
-                                           doSysVar=True)
+puWeight_UL2016RDF = lambda: puWeightRDFProducer(
+    pufile_mcUL2016, pufile_dataUL2016, "pu_mc", "pileup", verbose=False, doSysVar=True)
 puAutoWeight_UL2016 = lambda: puWeightRDFProducer(
     "auto", pufile_dataUL2016, "pu_mc", "pileup", verbose=False)
 
@@ -109,12 +116,8 @@ pufile_dataUL2017 = "%s/src/PhysicsTools/NanoAODTools/python/postprocessing/data
     'CMSSW_BASE']
 pufile_mcUL2017 = "%s/src/PhysicsTools/NanoAODTools/python/postprocessing/data/pileup/mcPileupUL2017.root" % os.environ[
     'CMSSW_BASE']
-puWeight_UL2017 = lambda: puWeightRDFProducer(pufile_mcUL2017,
-                                           pufile_dataUL2017,
-                                           "pu_mc",
-                                           "pileup",
-                                           verbose=False,
-                                           doSysVar=True)
+puWeight_UL2017RDF = lambda: puWeightRDFProducer(
+    pufile_mcUL2017, pufile_dataUL2017, "pu_mc", "pileup", verbose=False, doSysVar=True)
 puAutoWeight_UL2017 = lambda: puWeightRDFProducer(
     "auto", pufile_dataUL2017, "pu_mc", "pileup", verbose=False)
 
@@ -123,12 +126,8 @@ pufile_dataUL2018 = "%s/src/PhysicsTools/NanoAODTools/python/postprocessing/data
     'CMSSW_BASE']
 pufile_mcUL2018 = "%s/src/PhysicsTools/NanoAODTools/python/postprocessing/data/pileup/mcPileupUL2018.root" % os.environ[
     'CMSSW_BASE']
-puWeight_UL2018 = lambda: puWeightRDFProducer(pufile_mcUL2018,
-                                           pufile_dataUL2018,
-                                           "pu_mc",
-                                           "pileup",
-                                           verbose=False,
-                                           doSysVar=True)
+puWeight_UL2018RDF = lambda: puWeightRDFProducer(
+    pufile_mcUL2018, pufile_dataUL2018, "pu_mc", "pileup", verbose=False, doSysVar=True)
 puAutoWeight_UL2018 = lambda: puWeightRDFProducer(
     "auto", pufile_dataUL2018, "pu_mc", "pileup", verbose=False)
 
@@ -137,9 +136,12 @@ def puWeightRDF(**kwargs):
     isMC = kwargs.pop("isMC")
     year = int(kwargs.pop("year"))
 
+    if not isMC:
+        return lambda: puWeightDummyRDFProducer()
+
     if year == 2016:
-        return puWeight_2016
+        return puWeight_2016RDF
     elif year == 2017:
-        return puWeight_2017
+        return puWeight_2017RDF
     elif year == 2018:
-        return puWeight_2018
+        return puWeight_2018RDF

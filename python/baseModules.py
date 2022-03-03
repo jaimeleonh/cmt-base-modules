@@ -37,6 +37,7 @@ class JetLepMetSyst(Syst):
         kwargs.setdefault("jet_syst", "nom")
         kwargs.setdefault("muon_syst", "")
         kwargs.setdefault("electron_syst", "")
+        kwargs.setdefault("photon_syst", "")
         kwargs.setdefault("tau_syst", "")
         kwargs.setdefault("met_syst", "")
         kwargs.setdefault("met_smear_tag", "T1Smear")
