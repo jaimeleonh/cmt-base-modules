@@ -22,7 +22,7 @@ class jetSmearer {
       std::string jerUncertaintyInputFileName
     );
     ~jetSmearer ();
-    std::vector<std::vector<float>> get_smear_vals(
+    std::vector<ROOT::VecOps::RVec<float>> get_smear_vals(
       int run,
       int luminosityBlock,
       int event,

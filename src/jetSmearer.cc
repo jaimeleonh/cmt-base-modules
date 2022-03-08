@@ -19,7 +19,7 @@ jetSmearer::jetSmearer (
 jetSmearer::~jetSmearer() {}
 
 // std::vector<std::vector<float>> jetSmearer::get_smear_vals(
-std::vector<std::vector<float>> jetSmearer::get_smear_vals(
+std::vector<ROOT::VecOps::RVec<float>> jetSmearer::get_smear_vals(
     int run,
     int luminosityBlock,
     int event,
@@ -34,7 +34,7 @@ std::vector<std::vector<float>> jetSmearer::get_smear_vals(
     float rho
 ) {
 
-  std::vector<float> jet_smear_factor, jet_smear_factor_down, jet_smear_factor_up;
+  ROOT::VecOps::RVec<float>  jet_smear_factor, jet_smear_factor_down, jet_smear_factor_up;
 
   // set seed
   int runnum = run << 20;

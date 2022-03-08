@@ -89,6 +89,22 @@ def jetSmearerRDF(**kwargs):
         **kwargs)
 
 
+class jetVarRDFProducer():
+    def __init__(self, *args, **kwargs):
+        self.isMC = kwargs.pop("isMC")
+    
+    def run(self, df):
+        if not self.isMC:
+            return df, []
+        df = df.Define("Jet_pt_nom", "Jet_pt * jet_smear_factor")
+        df = df.Define("Jet_mass_nom", "Jet_mass * jet_smear_factor")
+        return df, ["Jet_pt_nom", "Jet_mass_nom"]
+
+
+def jetVarRDF(**kwargs):
+    return lambda: jetVarRDFProducer(**kwargs)
+
+
 class metSmearerRDFProducer():
     def __init__(self, isMC):
         self.isMC = isMC
@@ -114,4 +130,5 @@ class metSmearerRDFProducer():
 def metSmearerRDF(**kwargs):
     isMC = kwargs.pop("isMC")
     return lambda: metSmearerRDFProducer(isMC, **kwargs);
+
     
