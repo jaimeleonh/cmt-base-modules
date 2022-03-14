@@ -14,7 +14,7 @@ class DummyModule(Module):
         pass
     def analyze(self, event):
         return True
-    
+
 
 class Syst(object):
     def __init__(self, isMC=True, systs=None, *args, **kwargs):
@@ -43,6 +43,15 @@ class JetLepMetSyst(Syst):
         kwargs.setdefault("met_smear_tag", "T1Smear")
         super(JetLepMetSyst, self).__init__(kwargs.pop("isMC", True), kwargs)
 
+        assert sum([self.muon_syst != "", self.electron_syst != "", self.tau_syst != ""]) <= 1
+        self.lep_syst = ""
+        if self.muon_syst:
+            self.lep_syst = self.muon_syst
+        elif self.electron_syst:
+            self.lep_syst = self.electron_syst
+        elif self.tau_syst:
+            self.lep_syst = self.tau_syst
+
 
 class JetLepMetModule(JetLepMetSyst, Module):
     def get_daus(self, event, muons, electrons, taus):
@@ -69,13 +78,13 @@ class JetLepMetModule(JetLepMetSyst, Module):
             eval("dau1.pt%s" % dau1_syst), dau1.eta, dau1.phi, eval("dau1.mass%s" % dau1_syst))
         dau2_tlv.SetPtEtaPhiM(
             eval("dau2.pt%s" % dau2_syst), dau2.eta, dau2.phi, eval("dau2.mass%s" % dau2_syst))
-        
+
         return dau1, dau2, dau1_tlv, dau2_tlv
 
     def get_bjets(self, event, jets):
         bjet1 = jets[event.bjet1_JetIdx]
         bjet2 = jets[event.bjet2_JetIdx]
-        
+
         # build TLorentzVectors
         bjet1_tlv = ROOT.TLorentzVector()
         bjet2_tlv = ROOT.TLorentzVector()
@@ -90,7 +99,7 @@ class JetLepMetModule(JetLepMetSyst, Module):
         if event.VBFjet1_JetIdx != -1 and event.VBFjet2_JetIdx != -1:
             vbfjet1 = jets[event.VBFjet1_JetIdx]
             vbfjet2 = jets[event.VBFjet2_JetIdx]
-            
+
             # build TLorentzVectors
             vbfjet1_tlv = ROOT.TLorentzVector()
             vbfjet2_tlv = ROOT.TLorentzVector()
