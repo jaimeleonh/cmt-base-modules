@@ -10,7 +10,8 @@ ROOT = import_root()
 
 def prefiringWeight(**kwargs):
     isMC = kwargs.pop("isMC")
-    if not isMC:
+    isUL = kwargs.pop("isUL")
+    if not isMC or isUL:  # pref weight already included in UL nanoAODv9
         return lambda: DummyModule(**kwargs)
     return lambda: PrefCorr(**kwargs)
 
@@ -19,7 +20,8 @@ class prefiringWeightRDFProducer(JetLepMetSyst):
     def __init__(self, *args, **kwargs):
         super(prefiringWeightRDFProducer, self).__init__(*args, **kwargs)
         self.isMC = kwargs.pop("isMC")
-        if self.isMC:
+        self.isUL = kwargs.pop("isUL")
+        if self.isMC and not self.isUL:
             if "/libBaseModules.so" not in ROOT.gSystem.GetLibraries():
                 ROOT.gSystem.Load("libBaseModules.so")
             base = "{}/{}/src/Base/Modules".format(
@@ -40,9 +42,9 @@ class prefiringWeightRDFProducer(JetLepMetSyst):
             )
 
     def run(self, df):
-        if not self.isMC:
+        if not self.isMC or self.isUL:
             return df, []
-        branch_names = ["PrefireWeight_Down", "PrefireWeight", "PrefireWeight_Up"]
+        branch_names = ["L1PreFiringWeight_Dn", "L1PreFiringWeight_Nom", "L1PreFiringWeight_Up"]
         df = df.Define("pref_weights", "prefiring_weight.get_weights(Jet_pt{0}, Jet_eta, "
             "Jet_chEmEF, Jet_neEmEF, Photon_jetIdx, Photon_pt{1}, Photon_eta, Photon_electronIdx, "
             "Electron_pt{2}, Electron_eta, Electron_jetIdx, Electron_photonIdx)".format(

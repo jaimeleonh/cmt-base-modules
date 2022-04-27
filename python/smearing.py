@@ -51,7 +51,8 @@ class jetSmearerRDFProducer():
 
 def jetSmearerRDF(**kwargs):
     isMC = kwargs.pop("isMC")
-    year = str(kwargs.pop("year"))
+    isUL = kwargs.pop("isUL")
+    year = kwargs.pop("year")
     jetType = kwargs.pop("jetType", "AK4PFchs")
     jerTag = kwargs.pop("jerTag", "")
 
@@ -65,20 +66,24 @@ def jetSmearerRDF(**kwargs):
         'UL2018': 'Summer19UL18_JRV2_MC',
     }
 
+    if isUL and year == 2016:
+        raise ValueError("UL 2016 needs a further check")
+
     jerInputFileName = ""
     jerUncertaintyInputFileName = ""
     if jerTag != "":
-        jerTag = jerTagsMC[year]
+        jerTag = jerTagsMC["%s%s" % (("UL" if isUL else ""), year)]
         jerInputFileName = jerTag + "_PtResolution_" + jetType + ".txt"
         jerUncertaintyInputFileName = jerTag + "_SF_" + jetType + ".txt"
     else:
-        if year == "2016":
+        raise ValueError("Empty jerTag, deprecated")
+        if year == 2016:
             jerInputFileName = "Summer16_25nsV1_MC_PtResolution_" + jetType + ".txt"
             jerUncertaintyInputFileName = "Summer16_25nsV1_MC_SF_" + jetType + ".txt"
-        elif year == "2017" or year == "2018":  # use 2017 JER for 2018 for the time being
+        elif year == 2017 or year == 2018:  # use 2017 JER for 2018 for the time being
             jerInputFileName = "Fall17_V3_MC_PtResolution_" + jetType + ".txt"
             jerUncertaintyInputFileName = "Fall17_V3_MC_SF_" + jetType + ".txt"
-        elif year == "2018" and False:  # jetSmearer not working with 2018 JERs yet
+        elif year == 2018 and False:  # jetSmearer not working with 2018 JERs yet
             jerInputFileName = "Autumn18_V7_MC_PtResolution_" + jetType + ".txt"
             jerUncertaintyInputFileName = "Autumn18_V7_MC_SF_" + jetType + ".txt"
 
@@ -131,4 +136,3 @@ def metSmearerRDF(**kwargs):
     isMC = kwargs.pop("isMC")
     return lambda: metSmearerRDFProducer(isMC, **kwargs);
 
-    
