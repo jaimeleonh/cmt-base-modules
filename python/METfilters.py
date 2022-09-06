@@ -85,5 +85,20 @@ class MetFilterRDFProducer():
 
 
 def MetFilterRDF(**kwargs):
+    """
+    Module to apply MET Filters
+
+    YAML sintaxis:
+
+    .. code-block:: yaml
+
+        codename:
+            name: MetFilterRDF
+            path: Base.Modules.METfilters
+            parameters:
+                isMC: self.dataset.process.isMC
+                year: self.config.year
+
+    """
     return lambda: MetFilterRDFProducer(**kwargs)
 

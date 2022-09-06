@@ -44,12 +44,32 @@ class jetSmearerRDFProducer():
         df = df.Define("smear_factors", "jet_smearer.get_smear_vals("
             "run, luminosityBlock, event, Jet_pt, Jet_eta, Jet_phi, Jet_mass, "
             "GenJet_pt, GenJet_eta, GenJet_phi, GenJet_mass, fixedGridRhoFastjetAll)")
+            # "GenJet_pt, GenJet_eta, GenJet_phi, GenJet_mass, Rho_fixedGridRhoFastjetAll)")
         for ib, branch in enumerate(branches):
             df = df.Define(branch, "smear_factors[%s]" % ib)
         return df, branches
 
 
 def jetSmearerRDF(**kwargs):
+    """
+    Module to compute jet smearing factors
+    Note: UL2016_preVFP is not implemented
+
+    YAML sintaxis:
+
+    .. code-block:: yaml
+
+        codename:
+            name: jetSmearerRDF
+            path: Base.Modules.smearing
+            parameters:
+                year: self.config.year
+                isMC: self.dataset.process.isMC
+                jerTag: self.config.year
+                isUL: self.dataset.has_tag('ul')
+
+    """
+
     isMC = kwargs.pop("isMC")
     isUL = kwargs.pop("isUL")
     year = kwargs.pop("year")
@@ -107,6 +127,20 @@ class jetVarRDFProducer():
 
 
 def jetVarRDF(**kwargs):
+    """
+    Module to compute jet pt and mass after applying smearing factors
+
+    YAML sintaxis:
+
+    .. code-block:: yaml
+
+        codename:
+            name: jetVarRDF
+            path: Base.Modules.smearing
+            parameters:
+                isMC: self.dataset.process.isMC
+
+    """
     return lambda: jetVarRDFProducer(**kwargs)
 
 
@@ -133,6 +167,20 @@ class metSmearerRDFProducer():
 
 
 def metSmearerRDF(**kwargs):
+    """
+    Module to compute MET pt and phi after applying smearing to all jets
+
+    YAML sintaxis:
+
+    .. code-block:: yaml
+
+        codename:
+            name: metSmearerRDF
+            path: Base.Modules.smearing
+            parameters:
+                isMC: self.dataset.process.isMC
+
+    """
     isMC = kwargs.pop("isMC")
     return lambda: metSmearerRDFProducer(isMC, **kwargs);
 
