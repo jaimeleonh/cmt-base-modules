@@ -117,13 +117,19 @@ def jetSmearerRDF(**kwargs):
 class jetVarRDFProducer():
     def __init__(self, *args, **kwargs):
         self.isMC = kwargs.pop("isMC")
-    
+
     def run(self, df):
         if not self.isMC:
             return df, []
         df = df.Define("Jet_pt_nom", "Jet_pt * jet_smear_factor")
         df = df.Define("Jet_mass_nom", "Jet_mass * jet_smear_factor")
-        return df, ["Jet_pt_nom", "Jet_mass_nom"]
+        df = df.Define("Jet_pt_smeared_up", "Jet_pt * jet_smear_factor_up")
+        df = df.Define("Jet_mass_smeared_up", "Jet_mass * jet_smear_factor_up")
+        df = df.Define("Jet_pt_smeared_down", "Jet_pt * jet_smear_factor_down")
+        df = df.Define("Jet_mass_smeared_down", "Jet_mass * jet_smear_factor_down")
+        return df, ["Jet_pt_nom", "Jet_mass_nom",
+            "Jet_pt_smeared_up", "Jet_mass_smeared_up",
+            "Jet_pt_smeared_down", "Jet_mass_smeared_down"]
 
 
 def jetVarRDF(**kwargs):
