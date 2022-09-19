@@ -36,8 +36,9 @@ std::vector<std::vector<ROOT::VecOps::RVec<float>>> jecProvider::get_jec_uncerta
 
       jecSourceUncRegroupedProviders_[source]->setJetEta(Jet_eta[ijet]);
       jecSourceUncRegroupedProviders_[source]->setJetPt(Jet_pt[ijet]);
-      unc_down.push_back(1 + jecSourceUncRegroupedProviders_[source]->getUncertainty(false));
+      unc_down.push_back(1 - jecSourceUncRegroupedProviders_[source]->getUncertainty(false));
     }
+
     jec_uncertainties_up.push_back(unc_up);
     jec_uncertainties_down.push_back(unc_down);
   }

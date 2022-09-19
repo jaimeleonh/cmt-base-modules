@@ -10,7 +10,7 @@ from analysis_tools.utils import import_root
 ROOT = import_root()
 
 class jecProviderRDFProducer(JetLepMetSyst):
-    def __init__(self, isMC, 
+    def __init__(self, isMC,
             jerInputFileName="Spring16_25nsV10_MC_PtResolution_AK4PFchs.txt",
             jec_sources=[], *args, **kwargs):
 
@@ -68,16 +68,21 @@ def jecProviderRDF(**kwargs):
     Note: UL2016_preVFP is not implemented
 
     :param: jec_sources: names of the systematic sources to consider. They depend on the year:
-        - 2016: ``FlavorQCD``, ``RelativeBal``, ``HF``, ``BBEC1``, ``EC2``, ``Absolute``,
-            ``BBEC1_2016``, ``EC2_2016``, ``Absolute_2016``, ``HF_2016``, ``RelativeSample_2016``,
-            ``Total``
-        - 2017: ``FlavorQCD``, ``RelativeBal``, ``HF``, ``BBEC1``, ``EC2``, ``Absolute``,
-            ``BBEC1_2017``, ``EC2_2017``, ``Absolute_2017``, ``HF_2017``, ``RelativeSample_2017``,
-            ``Total``
-        - 2018: ``FlavorQCD``, ``RelativeBal``, ``HF``, ``BBEC1``, ``EC2``, ``Absolute``,
-            ``BBEC1_2018``, ``EC2_2018``, ``Absolute_2018``, ``HF_2018``, ``RelativeSample_2018``,
-            ``Total``
+
+        - 2016: ``FlavorQCD``, ``RelativeBal``, ``HF``, ``BBEC1``, ``EC2``, ``Absolute``,\
+        ``BBEC1_2016``, ``EC2_2016``, ``Absolute_2016``, ``HF_2016``, ``RelativeSample_2016``,\
+        ``Total``
+
+        - 2017: ``FlavorQCD``, ``RelativeBal``, ``HF``, ``BBEC1``, ``EC2``, ``Absolute``,\
+        ``BBEC1_2017``, ``EC2_2017``, ``Absolute_2017``, ``HF_2017``, ``RelativeSample_2017``,\
+        ``Total``
+
+        - 2018: ``FlavorQCD``, ``RelativeBal``, ``HF``, ``BBEC1``, ``EC2``, ``Absolute``,\
+        ``BBEC1_2018``, ``EC2_2018``, ``Absolute_2018``, ``HF_2018``, ``RelativeSample_2018``,\
+        ``Total``
+
         Note: probably more are available, to be checked.
+
     :type jec_sources: list of str
 
     YAML sintaxis:
@@ -101,7 +106,7 @@ def jecProviderRDF(**kwargs):
     year = kwargs.pop("year")
     jetType = kwargs.pop("jetType", "AK4PFchs")
     # jerTag = kwargs.pop("jerTag", "")
-    jec_sources = kwargs.pop("jec_sources", "")
+    jec_sources = kwargs.pop("jec_sources", [])
 
     jerTagsMC = {
         '2016': 'Summer16_07Aug2017_V11_MC',
@@ -120,18 +125,19 @@ def jecProviderRDF(**kwargs):
     jerTag = jerTagsMC["%s%s" % (("UL" if isUL else ""), year)]
     jerInputFileName = jerTag + "_PtResolution_" + jetType + ".txt"
 
-    for jec_source in jec_sources:
-        if int(year) == 2016:
-            assert jec_source in [
-                "FlavorQCD", "RelativeBal", "HF", "BBEC1", "EC2", "Absolute", "BBEC1_2016",
-                "EC2_2016", "Absolute_2016", "HF_2016", "RelativeSample_2016", "Total"]
-        elif int(year) == 2017:
-            assert jec_source in [
-                "FlavorQCD", "RelativeBal", "HF", "BBEC1", "EC2", "Absolute", "BBEC1_2017",
-                "EC2_2017", "Absolute_2017", "HF_2017", "RelativeSample_2017", "Total"]
-        elif int(year) == 2018:
-            assert jec_source in [
-                "FlavorQCD", "RelativeBal", "HF", "BBEC1", "EC2", "Absolute", "BBEC1_2018",
-                "EC2_2018", "Absolute_2018", "HF_2018", "RelativeSample_2018", "Total"]
+    jec_sources_per_year = {
+        2016: ["FlavorQCD", "RelativeBal", "HF", "BBEC1", "EC2", "Absolute", "BBEC1_2016",
+            "EC2_2016", "Absolute_2016", "HF_2016", "RelativeSample_2016", "Total"],
+        2017: ["FlavorQCD", "RelativeBal", "HF", "BBEC1", "EC2", "Absolute", "BBEC1_2017",
+            "EC2_2017", "Absolute_2017", "HF_2017", "RelativeSample_2017", "Total"],
+        2018: ["FlavorQCD", "RelativeBal", "HF", "BBEC1", "EC2", "Absolute", "BBEC1_2018",
+            "EC2_2018", "Absolute_2018", "HF_2018", "RelativeSample_2018", "Total"]
+    }
+
+    if len(jec_sources) == 0:
+        jec_sources = jec_sources_per_year[int(year)]
+    else:
+        for jec_source in jec_sources:
+            assert jec_source in jec_sources_per_year[int(year)]
 
     return lambda: jecProviderRDFProducer(isMC, jerInputFileName, jec_sources, **kwargs)
