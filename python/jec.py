@@ -82,6 +82,7 @@ def jecProviderRDF(**kwargs):
         ``Total``
 
         Note: probably more are available, to be checked.
+        Note: if none are specified as input, all the available from above will be computed
 
     :type jec_sources: list of str
 
